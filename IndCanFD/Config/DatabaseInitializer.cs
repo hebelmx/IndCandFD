@@ -53,6 +53,23 @@ public class DatabaseInitializer
                 new { CommandId = commandId, Length = 255 },
                 transaction: transaction);
         }
+        
+          // Create Ports table
+    	connection.Execute(
+        	@"CREATE TABLE IF NOT EXISTS Ports (
+		ID INTEGER PRIMARY KEY,
+		Data TEXT NOT NULL
+	    	);",
+        transaction: transaction);
+
+    	// Populate Ports table with default value
+    	connection.Execute(
+		@"INSERT INTO Ports (ID, Data) VALUES (@ID, @Data)
+	      	ON CONFLICT(ID) DO UPDATE SET Data = excluded.Data;",
+		new { ID = 1, Data = "vcan0" },
+        transaction: transaction);
+        
+	// Commit the transaction to save all changes to the database
         transaction.Commit();
     }
 }
