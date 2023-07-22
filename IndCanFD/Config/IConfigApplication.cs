@@ -28,6 +28,11 @@ public interface IConfigApplication
     Task<string> DumpAllData();
 
     /// <summary>
+    /// Displays all config data.
+    /// </summary>
+    Task<List<ConfigData>> DumpListAllData();
+
+    /// <summary>
     /// Handles the "dumpHistory" command to fetch and print the history of a given ID if it exists.
     /// </summary>
     Task<string> HandleDumpHistoryCommand(string[] args);
@@ -41,4 +46,9 @@ public interface IConfigApplication
     /// Returns the help text for the application.
     /// </summary>
     string GetHelpText();
+
+    Task<List<Port>> GetAllPorts();
+    Task AddPort(Port editingPort);
+    Task UpdatePort(Port editingPort);
+    Task DeletePort(int id);
 }

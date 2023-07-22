@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System.Data.Common;
+using System.Data.SQLite;
 using System.Text;
 using Dapper;
 using static System.Text.RegularExpressions.Regex;
@@ -27,7 +28,7 @@ public class ConfigService : IConfigService
     public async Task<List<ConfigData>> GetAll()
     {
         await using var connection = new SQLiteConnection(_connectionString);
-        connection.Open();
+        connection.OpenAsync();
         var result = await connection.QueryAsync<ConfigData>("SELECT * FROM Config;");
         return result.ToList();
     }
@@ -49,7 +50,7 @@ public class ConfigService : IConfigService
     public async Task UpdateCommandLength(int id, int length)
     {
         await using var connection = new SQLiteConnection(_connectionString);
-        connection.Open();
+        connection.OpenAsync();
         await connection.ExecuteAsync("INSERT OR REPLACE INTO CommandLength (CommandId, Length) VALUES (@id, @length);", new { id, length });
     }
 
@@ -59,7 +60,7 @@ public class ConfigService : IConfigService
     public async Task<ConfigData> Read(int id)
     {
         await using var connection = new SQLiteConnection(_connectionString);
-        connection.Open();
+        connection.OpenAsync();
         var configData = await connection.QueryFirstOrDefaultAsync<ConfigData>("SELECT * FROM Config WHERE ID = @Id;", new { Id = id });
         return configData;
     }
@@ -70,7 +71,7 @@ public class ConfigService : IConfigService
     public async Task<int?> GetCommandLength(int id)
     {
         await using var connection = new SQLiteConnection(_connectionString);
-        connection.Open();
+        connection.OpenAsync();
         var length = await connection.QuerySingleOrDefaultAsync<int?>("SELECT Length FROM CommandLength WHERE CommandId = @id;", new { id });
         return length;
     }
@@ -97,7 +98,7 @@ public class ConfigService : IConfigService
         }
 
         await using var connection = new SQLiteConnection(_connectionString);
-        connection.Open();
+        connection.OpenAsync();
         var configData = await connection.QueryFirstOrDefaultAsync<ConfigData>("SELECT * FROM Config WHERE ID = @Id;", new { Id = id });
 
         if (configData != null)
@@ -128,7 +129,7 @@ public class ConfigService : IConfigService
     public async Task<bool> Reset(int id)
     {
         await using var connection = new SQLiteConnection(_connectionString);
-        connection.Open();
+        connection.OpenAsync();
 
         var configData = await connection.QueryFirstOrDefaultAsync<ConfigData>("SELECT * FROM Config WHERE ID = @Id;", new { Id = id });
 
@@ -148,6 +149,46 @@ public class ConfigService : IConfigService
         await connection.ExecuteAsync("DELETE FROM Config WHERE ID = @ID;", new { ID = id });
         return true;
     }
+
+
+    public async Task<List<Port>> GetAllPorts()
+    {
+        await using var connection = new SQLiteConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var sql = "SELECT * FROM Ports";
+        var result = await connection.QueryAsync<Port>(sql);
+        return result.ToList();
+    }
+
+    public async Task AddPort(Port editingPort)
+    {
+        await using var connection = new SQLiteConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var sql = "INSERT INTO Ports (ID, Data) VALUES (@ID, @Data)";
+        await connection.ExecuteAsync(sql, new { ID = editingPort.ID, Data = editingPort.Data });
+    }
+
+    public async Task UpdatePort(Port editingPort)
+    {
+        await using var connection = new SQLiteConnection(_connectionString);
+        connection.OpenAsync();
+
+        var sql = "UPDATE Ports SET Data = @Data WHERE ID = @ID";
+        await connection.ExecuteAsync(sql, new { ID = editingPort.ID, Data = editingPort.Data });
+    }
+
+    public async Task DeletePort(int id)
+    {
+        await using var connection = new SQLiteConnection(_connectionString);
+        connection.OpenAsync();
+
+        var sql = "DELETE FROM Ports WHERE ID = @ID";
+        await connection.ExecuteAsync(sql, new { ID = id });
+    }
+
+
 
     /// <inheritdoc/>
     public void InitializeDatabase()

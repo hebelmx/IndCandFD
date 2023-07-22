@@ -1,0 +1,46 @@
+﻿@page "/secure/editconfig"
+
+@using BlazorApp1.Views
+@using ConfigDataApp
+@inject ConfigDataService ConfigDataService
+@inject NavigationManager NavManager
+<EditForm Model="@configData" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputNumber @bind-Value="@configData.ID" />
+    <InputText @bind-Value="@configData.Data" />
+    <InputDate @bind-Value="@configData.DateTime" />
+    <InputText @bind-Value="@configData.UserName" />
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private ConfigDataView configData = new ConfigDataView();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigDataService.InitClassAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+    // Perform actual update or creation here
+        if (configData.ID == 0)
+        {
+            await ConfigDataService.CreateIdDataAsync(ConfigDataViewToData(configData));
+        }
+        else
+        {
+            await ConfigDataService.UpdateIdDataAsync(ConfigDataViewToData(configData));
+        }
+
+        NavManager.NavigateTo("/secure/configlist");
+    }
+
+    private ConfigData ConfigDataViewToData(ConfigDataView viewData)
+    {
+        throw new NotImplementedException();
+    }
+}

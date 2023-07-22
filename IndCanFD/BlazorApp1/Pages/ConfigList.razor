@@ -1,0 +1,21 @@
+﻿@page "/secure/configlist"
+@using ConfigDataApp
+@using Newtonsoft.Json
+@inject ConfigDataService ConfigDataService
+@inject NavigationManager NavManager
+
+@foreach (var configData in configDataList)
+{
+    <p>@configData.ID - @configData.Data - @configData.DateTime - @configData.UserName</p>
+}
+
+@code {
+    private List<ConfigData> configDataList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigDataService.InitClassAsync();
+        var jsonString = await ConfigDataService.ReadAllIdDataAsync();
+        configDataList = JsonConvert.DeserializeObject<List<ConfigData>>(jsonString);
+    }
+}

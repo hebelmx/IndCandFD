@@ -16,6 +16,11 @@ public interface IConfigService
     Task<List<ConfigData>> GetAll();
     Task<List<ConfigDataHistory>> DumpHistory(int id);
 
+    Task<List<Port>> GetAllPorts();
+    Task AddPort(Port port);
+    Task UpdatePort(Port port);
+    Task DeletePort(int id);
+
     /// <summary>
     /// This method will initialize the SQLite database.
     /// </summary>

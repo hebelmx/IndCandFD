@@ -126,6 +126,17 @@ public class ConfigApplication : IConfigApplication
 
         return stringBuilder.ToString();
     }
+    
+
+    /// <summary>
+    /// Displays all config data.
+    /// </summary>
+    public  Task<List<ConfigData>> DumpListAllData()
+    {
+        var allData =  _configService.GetAll();
+        return allData;
+    }
+
 
     /// <summary>
     /// Handles the "dumpHistory" command to fetch and print the history of a given ID if it exists.
@@ -197,6 +208,8 @@ public class ConfigApplication : IConfigApplication
         return stringBuilder.ToString();
     }
 
+
+    
     /// <summary>
     /// Returns the help text for the application.
     /// </summary>
@@ -212,5 +225,25 @@ public class ConfigApplication : IConfigApplication
         stringBuilder.AppendLine(@"""Example: Config write 1 ""34""");
 
         return stringBuilder.ToString();
+    }
+
+    public Task<List<Port>> GetAllPorts()
+    {
+        return _configService.GetAllPorts();
+    }
+
+    public Task AddPort(Port editingPort)
+    {
+        return _configService.AddPort(editingPort);
+    }
+
+    public Task UpdatePort(Port editingPort)
+    {
+        return _configService.UpdatePort(editingPort);
+    }
+
+    public Task DeletePort(int id)
+    {
+      return  _configService.DeletePort(id);
     }
 }
