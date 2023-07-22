@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp2", "BlazorApp2\Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp1", "BlazorApp1\BlazorApp1.csproj", "{DAA7C868-B62D-4C72-8B0E-0154A6D29C61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigDataApp", "ConfigData\ConfigDataApp.csproj", "{881CE622-7483-4F15-8A67-35ADB16FDE7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigDataApp", "ConfigData\ConfigDataApp.csproj", "{881CE622-7483-4F15-8A67-35ADB16FDE7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigDataAppTests", "ConfigDataAppTests\ConfigDataAppTests.csproj", "{3FB77534-DB07-4DF2-B690-2B683BE48665}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigDataAppTests", "ConfigDataAppTests\ConfigDataAppTests.csproj", "{3FB77534-DB07-4DF2-B690-2B683BE48665}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

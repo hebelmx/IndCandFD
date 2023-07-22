@@ -1,16 +1,21 @@
-﻿@page "/secure/configlist"
+﻿@page "/configlist"
+@attribute [Authorize]
+
+
 @using ConfigDataApp
 @using Newtonsoft.Json
-@inject ConfigDataService ConfigDataService
+@inject IConfigDataService ConfigDataService
 @inject NavigationManager NavManager
 
-@foreach (var configData in configDataList)
+@if (configDataList != null)
 {
-    <p>@configData.ID - @configData.Data - @configData.DateTime - @configData.UserName</p>
+    @foreach (var configData in configDataList)
+    {
+        <p>@configData.ID - @configData.Data - @configData.DateTime - @configData.UserName</p>
+    }
 }
-
 @code {
-    private List<ConfigData> configDataList;
+    private List<ConfigData> configDataList = new List<ConfigData>();
 
     protected override async Task OnInitializedAsync()
     {

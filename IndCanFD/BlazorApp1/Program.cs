@@ -9,9 +9,32 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Configuration;
+using Serilog.Events;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/logs.txt", rollingInterval: RollingInterval.Year)
+    .WriteTo.Seq("http://localhost:5341",
+        controlLevelSwitch: null,
+        restrictedToMinimumLevel: LogEventLevel.Verbose,
+        apiKey: null,
+        batchPostingLimit: 1000,
+        period: TimeSpan.FromSeconds(2),
+        retainedInvalidPayloadsLimitBytes: null,
+        messageHandler: null,
+        eventBodyLimitBytes: 262144
+        )
+    .CreateLogger();
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.AddSerilog();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -24,10 +47,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddScoped<IDbConnection>(iServiceProvider => new SqlConnection(connectionString));
+builder.Services.AddScoped<ICommandLengthService, CommandLengthService>();
 builder.Services.AddScoped<ConfigDataValidator>();
 
-builder.Services.AddScoped<IConfigDataService, ConfigDataService>();
-builder.Services.AddScoped<ICommandLengthService, CommandLengthService>();
+
+
 
 
 var app = builder.Build();
@@ -57,3 +81,7 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
+
+// Close and flush the log
+Log.CloseAndFlush();

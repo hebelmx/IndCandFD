@@ -1,0 +1,20 @@
+﻿@page "/users"
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+
+<button @onclick="DeleteAllUsers">Delete All Users</button>
+
+@code {
+    private async Task DeleteAllUsers()
+    {
+        var users = UserManager.Users.ToList();
+        foreach (var user in users)
+        {
+            var result = await UserManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+    // Error handling
+            }
+        }
+    }
+}

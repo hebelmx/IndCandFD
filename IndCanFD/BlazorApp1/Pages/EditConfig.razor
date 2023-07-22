@@ -1,27 +1,129 @@
-﻿@page "/secure/editconfig"
+﻿@page "/editconfig"
+@attribute [Authorize]
+
 
 @using BlazorApp1.Views
 @using ConfigDataApp
-@inject ConfigDataService ConfigDataService
+@inject IConfigDataService ConfigDataService
 @inject NavigationManager NavManager
-<EditForm Model="@configData" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-    <InputNumber @bind-Value="@configData.ID" />
-    <InputText @bind-Value="@configData.Data" />
-    <InputDate @bind-Value="@configData.DateTime" />
-    <InputText @bind-Value="@configData.UserName" />
+@*<div class="card rounded text-white" style="background-color: #002b36;">
 
-    <button type="submit">Submit</button>
-</EditForm>
+    <div class="card-body">
+
+        <EditForm Model="@configData" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group row mb-3">
+                <div class="col-md-6">
+                        <input type="datetime" @bind="configData.DateTime" readonly style="background-color: #fdf6e3 ;" />
+                </div>
+                <div class="col-md-6">
+                        <input type="text" @bind="configData.UserName" readonly style="background-color: #fdf6e3 ;" />
+                </div>
+            </div>
+
+        
+            <div class="form-group row mb-3">
+                <label for="id-input" class="col-md-2 col-form-label">ID:</label>
+                <div class="col-md-4">
+                    <InputNumber id="id-input" class="form-control" @bind-Value="@configData.ID" />
+                    <div class="form-text text-light bg-secondary rounded p-1 mt-1">Valid from 1 to 7</div>
+                </div>
+                <label for="data-input" class="col-md-2 col-form-label">Data:</label>
+                <div class="col-md-4">
+                    <InputText id="data-input" class="form-control" @bind-Value="@configData.Data" />
+                    <div class="form-text text-light bg-secondary rounded p-1 mt-1">Hex string</div>
+                </div>
+            </div>
+
+
+
+            <div class="form-group row mb-3 d-flex justify-content-end">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+</div>*@
+<div class="card rounded text-white" style="background-color: #002b36;">
+    <div class="card-body">
+        <EditForm Model="@configData" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <!-- DateTime and UserName fields -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="col-form-label">DateTime:</label>
+                    <input type="datetime" @bind="configData.DateTime" readonly style="background-color: #fdf6e3 ;" />
+                </div>
+                <div class="col-md-6">
+                    <label class="col-form-label">UserName:</label>
+                    <input type="text" @bind="configData.UserName" readonly style="background-color: #fdf6e3 ;" />
+                </div>
+            </div>
+
+            <!-- ID field -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id-input" class="col-md-2 col-form-label">ID:</label>
+                    <div class="col-md-4">
+                        <InputNumber id="id-input" class="form-control" @bind-Value="@configData.ID"/>
+                        <div class="form-text text-light bg-secondary rounded p-1 mt-1">Valid from 1 to 7</div>
+                    </div>
+                    <div class="col-md-6"></div> <!-- Empty column for alignment -->
+                </div>
+
+            <!-- Data field -->
+                <div class="col-md-6">
+                    <label for="data-input" class="col-md-2 col-form-label">Data:</label>
+                    <div class="col-md-4">
+                        <InputText id="data-input" class="form-control" @bind-Value="@configData.Data" />
+                        <div class="form-text text-light bg-secondary rounded p-1 mt-1">Hex string</div>
+                    </div>
+                    <div class="col-md-6"></div> <!-- Empty column for alignment -->
+                </div>
+            </div>
+            
+            <div class="row mb-3"></div> <!-- Empty row for alignment -->
+            <!-- Submit button -->
+            <div class="row mb-3 justify-content-end">
+            
+                <div class="col-md-3"></div> <!-- Empty column for alignment -->
+
+                <div class="col-md-3"></div> <!-- Empty column for alignment -->
+                <div class="col-md-6 justify-content-end">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            
+            </div>
+        </EditForm>
+    </div>
+</div>
+
 
 @code {
+
+    private string UserName { get; set; }
+    protected override void OnInitialized()
+    {
+        configData.DateTime = DateTime.Now;
+    }
+
     private ConfigDataView configData = new ConfigDataView();
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await ConfigDataService.InitClassAsync();
+        var authState = await authenticationStateTask;
+        configData.UserName = authState.User.Identity.Name;
+        configData.DateTime = DateTime.Now;
     }
 
     private async Task HandleValidSubmit()
@@ -36,11 +138,23 @@
             await ConfigDataService.UpdateIdDataAsync(ConfigDataViewToData(configData));
         }
 
-        NavManager.NavigateTo("/secure/configlist");
+        NavManager.NavigateTo("/configlist");
     }
 
     private ConfigData ConfigDataViewToData(ConfigDataView viewData)
     {
         throw new NotImplementedException();
     }
+
+    private Dictionary<string, object> GetTooltipAttributes(string tooltipText)
+    {
+        var attributes = new Dictionary<string, object>
+        {
+            { "data-bs-toggle", "tooltip" },
+            { "title", tooltipText }
+        };
+        return attributes;
+    }
+
+   
 }
