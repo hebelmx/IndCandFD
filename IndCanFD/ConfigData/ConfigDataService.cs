@@ -1,11 +1,10 @@
-﻿using System.Data;
+﻿using System.Collections.ObjectModel;
+using System.Data;
 using Dapper;
 using FluentValidation;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
 
-namespace ConfigDataApp;
+namespace ConfigDataService;
 
 /// <summary>
 /// This class is responsible for interacting with the Config and History tables in the database.
@@ -16,7 +15,7 @@ public class ConfigDataService : IConfigDataService
     // IDbConnection object for interacting with the database.
     private IDbConnection db;
 
-    // ConfigDataValidator object for validating ConfigData before database operations.
+    // ConfigDataValidator object for validating FramesData before database operations.
     private ConfigDataValidator validator;
 
 
@@ -52,14 +51,14 @@ public class ConfigDataService : IConfigDataService
     }
 
     /// <inheritdoc/>
-    public async Task<ConfigData> ReadIdDataAsync(int id)
+    public async Task<FramesData> ReadIdDataAsync(int id)
     {
         // Return the data for the given ID
-        return await db.QuerySingleOrDefaultAsync<ConfigData>("SELECT * FROM Config WHERE ID = @id", new { id = id });
+        return await db.QuerySingleOrDefaultAsync<FramesData>("SELECT * FROM Config WHERE ID = @id", new { id = id });
     }
 
     /// <inheritdoc/>
-    public async Task CreateIdDataAsync(ConfigData data)
+    public async Task CreateIdDataAsync(FramesData data)
     {
         // Validate the provided data
         var result = validator.Validate(data);
@@ -70,7 +69,7 @@ public class ConfigDataService : IConfigDataService
     }
 
     /// <inheritdoc/>
-    public async Task UpdateIdDataAsync(ConfigData data)
+    public async Task UpdateIdDataAsync(FramesData data)
     {
         // Validate the provided data
         var result = validator.Validate(data);
@@ -85,11 +84,11 @@ public class ConfigDataService : IConfigDataService
     }
 
     /// <inheritdoc/>
-    public async Task<string> ReadAllIdDataAsync()
+    public async Task<List<FramesData>> ReadAllIdDataAsync()
     {
         // Retrieve all data from the Config table and serialize it to a JSON string
-        var allData = (await db.QueryAsync<ConfigData>("SELECT * FROM Config")).ToList();
-        return JsonConvert.SerializeObject(allData);
+        var allData = (await db.QueryAsync<FramesData>("SELECT * FROM Config")).ToList();
+        return allData;
     }
 
     /// <inheritdoc/>

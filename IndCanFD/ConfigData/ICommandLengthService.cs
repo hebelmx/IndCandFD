@@ -1,4 +1,4 @@
-﻿namespace ConfigDataApp;
+﻿namespace ConfigDataService;
 
 public interface ICommandLengthService
 {

@@ -1,0 +1,83 @@
+﻿@page "/configlist"
+@*@attribute [Authorize]*@
+
+@using ConfigDataService
+@inject IConfigDataService ConfigDataService
+@inject NavigationManager NavManager
+
+
+
+@if (configDataList != null)
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Data</th>
+            <th>Date Time</th>
+            <th>User Name</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var configData in configDataList)
+        {
+            <tr>
+                <td>@configData.ID</td>
+                <td>@configData.Data</td>
+                <td>@configData.DateTime</td>
+                <td>@configData.UserName</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => EditConfig(configData)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteConfig(configData)">Delete</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>configDataList is null</p>
+}
+
+@code {
+ 
+
+    
+
+    private void EditConfig(FramesData framesData)
+    {
+    // Implement your edit logic here
+    // You can navigate to another page for editing or show a modal dialog
+    }
+
+    private void DeleteConfig(FramesData framesData)
+    {
+    // Implement your delete logic here
+    // You can show a confirmation dialog before performing the delete operation
+    }
+}
+
+
+@if (configDataList != null)
+{
+    @foreach (var configData in configDataList)
+    {
+        <p>@configData.ID - @configData.Data - @configData.DateTime - @configData.UserName</p>
+    }
+}
+else
+{
+    <p>configDataList is null</p>
+}
+@code {
+    private List<FramesData> configDataList = new List<FramesData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigDataService.InitClassAsync();
+        configDataList= await ConfigDataService.ReadAllIdDataAsync();
+      
+    }
+}

@@ -1,0 +1,164 @@
+﻿@page "/editconfig"
+@*@attribute [Authorize]*@
+
+
+@using BlazorApp1.Views
+@using ConfigDataService
+@inject IConfigDataService ConfigDataService
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+<div class="card rounded text-white" style="background-color: #002b36;">
+    <div class="card-body">
+        <EditForm Model="@configData" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <!-- DateTime and UserName fields -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="col-form-label">DateTime:</label>
+                    <input type="datetime" @bind="configData.DateTime" readonly style="background-color: #fdf6e3 ;" />
+                </div>
+                <div class="col-md-6">
+                    <label class="col-form-label">UserName:</label>
+                    <input type="text" @bind="configData.UserName" readonly style="background-color: #fdf6e3 ;" />
+                </div>
+            </div>
+
+            <!-- ID field -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id-input" class="col-md-2 col-form-label">ID:</label>
+                    <div class="col-md-4">
+                        @*<InputNumber id="id-input" class="form-control" @bind-Value="@configData.ID" ValueChanged="OnIdValueChanged" />*@
+                        <InputNumber id="id-input" class="form-control" @bind-Value="@configData.ID"/>
+                        <div class="form-text text-light bg-secondary rounded p-1 mt-1">Valid from 1 to 7</div>
+                    </div>
+                    <div class="col-md-6"></div> <!-- Empty column for alignment -->
+                </div>
+
+            <!-- Data field -->
+                <div class="col-md-6">
+                    <label for="data-input" class="col-md-2 col-form-label">Data:</label>
+                    <div class="col-md-4">
+                        <InputText id="data-input" class="form-control" @bind-Value="@configData.Data" />
+                        <div class="form-text text-light bg-secondary rounded p-1 mt-1">Hex string</div>
+                    </div>
+                    <div class="col-md-6"></div> <!-- Empty column for alignment -->
+                </div>
+            </div>
+            
+            <div class="row mb-3"></div> <!-- Empty row for alignment -->
+            <!-- Submit button -->
+            <div class="row mb-3 justify-content-end">
+            
+                <div class="col-md-3"></div> <!-- Empty column for alignment -->
+
+                <div class="col-md-3"></div> <!-- Empty column for alignment -->
+                <div class="col-md-6 justify-content-end">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+
+    private string UserName { get; set; }
+    protected override void OnInitialized()
+    {
+        configData.DateTime = DateTime.Now;
+    }
+
+    private ConfigDataView configData = new ConfigDataView();
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateTask;
+        configData.UserName = authState.User.Identity.Name;
+        configData.DateTime = DateTime.Now;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+    // Perform actual update or creation here
+        if (configData.ID == 0)
+        {
+            await ConfigDataService.CreateIdDataAsync(ConfigDataViewToData(configData));
+        }
+        else
+        {
+            await ConfigDataService.UpdateIdDataAsync(ConfigDataViewToData(configData));
+        }
+
+        NavManager.NavigateTo("/configlist");
+    }
+
+    private FramesData ConfigDataViewToData(ConfigDataView viewData)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Dictionary<string, object> GetTooltipAttributes(string tooltipText)
+    {
+        var attributes = new Dictionary<string, object>
+        {
+            { "data-bs-toggle", "tooltip" },
+            { "title", tooltipText }
+        };
+        return attributes;
+    }
+
+    private async Task OnIdValueChanged(int newValue)
+    {
+    // Check if the ID exists in the database and retrieve the data if it does
+        var existingData = await GetDataFromDatabase(newValue);
+
+        if (existingData != null)
+        {
+    // Populate the other fields with the retrieved data
+            configData.Data = existingData.Data;
+            configData.DateTime = existingData.DateTime;
+            configData.UserName = existingData.UserName;
+        }
+        else
+        {
+    // Reset the other fields if no corresponding data found
+            configData.Data = string.Empty;
+            configData.DateTime = DateTime.Now;
+            configData.UserName = string.Empty;
+        }
+    }
+
+    private async Task<ConfigDataView> GetDataFromDatabase(int id)
+    {
+    // Implement your logic to retrieve data from the database based on the provided ID
+    // Return null if no corresponding data found, otherwise return the retrieved data
+    // For example:
+        var data= await ConfigDataService.ReadIdDataAsync(id);
+
+        return data == null ? null : DataToConfigDataView(data);
+    }
+
+    private ConfigDataView DataToConfigDataView(FramesData data)
+    {
+        return new ConfigDataView
+        {
+            ID = data.ID,
+            Data = data.Data,
+            DateTime = data.DateTime,
+            UserName = data.UserName
+        };
+    }
+
+    
+
+}

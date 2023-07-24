@@ -1,9 +1,7 @@
-﻿using Dapper;
-using System.Data;
-using System.Threading.Tasks;
+﻿using System.Data;
+using Dapper;
 
-
-namespace ConfigDataApp;
+namespace ConfigDataService;
 
 
 public class CommandLengthService : ICommandLengthService

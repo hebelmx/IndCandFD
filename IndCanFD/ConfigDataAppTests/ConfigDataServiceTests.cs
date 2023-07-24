@@ -1,15 +1,15 @@
 ﻿using System.Data;
-using ConfigDataApp;
 using Dapper;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 using Xunit;
 using System.Threading.Tasks;
+using ConfigDataService;
 
 public class ConfigDataServiceTests : IAsyncLifetime
 {
-    private ConfigDataService service;
+    private ConfigDataService.ConfigDataService service;
     private IDbConnection db;
 
     public async Task InitializeAsync()
@@ -35,7 +35,7 @@ public class ConfigDataServiceTests : IAsyncLifetime
         // Delete all data from Config table
         await db.ExecuteAsync("DELETE FROM Config");
 
-        service = new ConfigDataService(db, validator);
+        service = new ConfigDataService.ConfigDataService(db, validator);
     }
 
     public Task DisposeAsync()
@@ -49,7 +49,7 @@ public class ConfigDataServiceTests : IAsyncLifetime
     public async Task ReadIdData_ShouldReturnCorrectData()
     {
         // Arrange
-        var expectedData = new ConfigData { ID = 1, Data = "AF 91 40 05", DateTime = DateTime.Now, UserName = "user1" };
+        var expectedData = new FramesData { ID = 1, Data = "AF 91 40 05", DateTime = DateTime.Now, UserName = "user1" };
         await db.ExecuteAsync("INSERT INTO Config(ID, Data, DateTime, UserName) VALUES(@ID, @Data, @DateTime, @UserName)", expectedData);
 
         // Act
@@ -64,7 +64,7 @@ public class ConfigDataServiceTests : IAsyncLifetime
     public async Task CreateIdData_ShouldInsertDataCorrectly()
     {
         // Arrange
-        var expectedData = new ConfigData { ID = 2, Data = "AF 91 40 06", DateTime = DateTime.Now, UserName = "user2" };
+        var expectedData = new FramesData { ID = 2, Data = "AF 91 40 06", DateTime = DateTime.Now, UserName = "user2" };
 
         // Act
         await service.CreateIdDataAsync(expectedData);
@@ -78,9 +78,9 @@ public class ConfigDataServiceTests : IAsyncLifetime
     public async Task UpdateIdData_ShouldUpdateDataCorrectly()
     {
         // Arrange
-        var initialData = new ConfigData { ID = 3, Data = "AF 91 40 07", DateTime = DateTime.Now, UserName = "user3" };
+        var initialData = new FramesData { ID = 3, Data = "AF 91 40 07", DateTime = DateTime.Now, UserName = "user3" };
         await service.CreateIdDataAsync(initialData);
-        var updatedData = new ConfigData { ID = 3, Data = "AF 91 40 08", DateTime = DateTime.Now, UserName = "user3" };
+        var updatedData = new FramesData { ID = 3, Data = "AF 91 40 08", DateTime = DateTime.Now, UserName = "user3" };
 
         // Act
         await service.UpdateIdDataAsync(updatedData);
@@ -94,15 +94,15 @@ public class ConfigDataServiceTests : IAsyncLifetime
     public async Task ReadAllIdData_ShouldReturnAllDataCorrectly()
     {
         // Arrange
-        var data1 = new ConfigData { ID = 4, Data = "AF 91 40 09", DateTime = DateTime.Now, UserName = "user4" };
-        var data2 = new ConfigData { ID = 5, Data = "AF 91 40 10", DateTime = DateTime.Now, UserName = "user5" };
+        var data1 = new FramesData { ID = 4, Data = "AF 91 40 09", DateTime = DateTime.Now, UserName = "user4" };
+        var data2 = new FramesData { ID = 5, Data = "AF 91 40 10", DateTime = DateTime.Now, UserName = "user5" };
         await service.CreateIdDataAsync(data1);
         await service.CreateIdDataAsync(data2);
-        var expectedDataList = new List<ConfigData> { data1, data2 };
+        var expectedDataList = new List<FramesData> { data1, data2 };
 
         // Act
-        var jsonData = await service.ReadAllIdDataAsync();
-        var actualDataList = JsonConvert.DeserializeObject<List<ConfigData>>(jsonData);
+        var actualDataList = await service.ReadAllIdDataAsync();
+     
 
         // Assert
         actualDataList.Should().BeEquivalentTo(expectedDataList);
@@ -112,7 +112,7 @@ public class ConfigDataServiceTests : IAsyncLifetime
     public async Task DeleteIdData_ShouldDeleteDataCorrectly()
     {
         // Arrange
-        var data = new ConfigData { ID = 6, Data = "AF 91 40 11", DateTime = DateTime.Now, UserName = "user6" };
+        var data = new FramesData { ID = 6, Data = "AF 91 40 11", DateTime = DateTime.Now, UserName = "user6" };
         await service.CreateIdDataAsync(data);
 
         // Act

@@ -1,7 +1,8 @@
-﻿using ConfigDataApp;
-using FluentValidation;
+﻿using FluentValidation;
 
-public class ConfigDataValidator : AbstractValidator<ConfigData>
+namespace ConfigDataService;
+
+public class ConfigDataValidator : AbstractValidator<FramesData>
 {
 
 

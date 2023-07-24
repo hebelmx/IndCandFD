@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using FluentValidation;
 
-namespace ConfigDataApp;
+namespace ConfigDataService;
 
 /// <summary>
 /// Interface for Config Data Service
@@ -13,8 +12,8 @@ public interface IConfigDataService
     /// Retrieves config data for a specific ID
     /// </summary>
     /// <param name="id">ID of the config data to retrieve</param>
-    /// <returns>ConfigData object with specified ID</returns>
-    Task<ConfigData> ReadIdDataAsync(int id);
+    /// <returns>FramesData object with specified ID</returns>
+    Task<FramesData> ReadIdDataAsync(int id);
 
 
 
@@ -34,27 +33,27 @@ public interface IConfigDataService
     /// <summary>
     /// Creates new config data
     /// </summary>
-    /// <param name="data">ConfigData object to add</param>
+    /// <param name="data">FramesData object to add</param>
     /// <exception cref="ValidationException">Thrown when validation fails</exception>
-    Task CreateIdDataAsync(ConfigData data);
+    Task CreateIdDataAsync(FramesData data);
 
     /// <summary>
     /// Updates existing config data
     /// </summary>
-    /// <param name="data">Updated ConfigData object</param>
+    /// <param name="data">Updated FramesData object</param>
     /// <exception cref="ValidationException">Thrown when validation fails</exception>
-    Task UpdateIdDataAsync(ConfigData data);
+    Task UpdateIdDataAsync(FramesData data);
 
     /// <summary>
     /// Retrieves all config data as a JSON string
     /// </summary>
-    /// <returns>A JSON string of all ConfigData</returns>
-    Task<string> ReadAllIdDataAsync();
+    /// <returns>A JSON string of all FramesData</returns>
+    Task<List<FramesData>> ReadAllIdDataAsync();
 
     /// <summary>
     /// Deletes config data with a specific ID
     /// </summary>
-    /// <param name="id">ID of the ConfigData to delete</param>
+    /// <param name="id">ID of the FramesData to delete</param>
     Task DeleteIdDataAsync(int id);
 
     /// <summary>

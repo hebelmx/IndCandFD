@@ -1,0 +1,52 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>BlazorApp1</PageTitle>
+
+@*<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4 auth">
+            <LoginDisplay />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+        
+     
+        <MatToaster />
+
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>*@
+
+<div class="page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <!-- Main content -->
+    <main class="container-fluid">
+        <!-- Top row -->
+        <div class="row top-row px-4 auth">
+            <div class="col-md-8"> <!-- LoginDisplay -->
+                <LoginDisplay />
+            </div>
+            <div class="col-md-4"> <!-- About link -->
+                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            </div>
+        </div>
+
+        <!-- MatBlazor Toast -->
+        <MatToaster />
+
+        <!-- Content area -->
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

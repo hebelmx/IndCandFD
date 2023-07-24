@@ -1,0 +1,200 @@
+﻿@page "/admin"
+
+@using Microsoft.AspNetCore.Identity
+@using ConfigDataService
+@using FramesDataService
+@using Microsoft.EntityFrameworkCore
+@using MatBlazor
+
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IDatabaseInitializer DatabaseInitializer
+@inject IMatToaster Toaster
+@inject UserManager<IdentityUser> UserManager
+
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @_currentCount</p>
+
+<matbutton class="btn btn-primary" @onclick="IncrementCount">Click me</matbutton>
+
+
+@if (_users != null)
+{
+
+    <MatTable Items="@_users" class="mat-elevation-z5" ShowPaging="false" UseSortHeaderRow="true">
+        <MatTableHeader>
+            <MatSortHeaderRow >
+                <MatSortHeader SortId="@nameof(IdentityUser.UserName)"><span style="width:600px">Username</span></MatSortHeader>
+                <MatSortHeader SortId="@nameof(IdentityUser.Email)">Email</MatSortHeader>
+               
+            </MatSortHeaderRow>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.UserName</td>
+            <td>@context.Email</td>
+         
+        </MatTableRow>
+    </MatTable>
+
+
+
+}
+else
+{
+    if(_users?.Count== 0)
+    {
+        <p>Not users in database</p>
+    }
+    else
+    {
+        <p>loading...</p>
+    }
+    
+
+}
+
+
+@code {
+    private List<IdentityUser>? _users;
+
+    [Inject]
+    private UserManager<IdentityUser> _userManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    // Fetch the user list from UserManager asynchronously
+        _users = await _userManager.Users.ToListAsync();
+    }
+}
+
+
+
+
+
+<MatButton Raised="true" @onclick="DeleteAllUsers">Delete All Users</MatButton>
+
+<MatButton Raised="true" @onclick="InitDataBase">InitDataBase</MatButton>
+
+<MatButton Raised="true" @onclick="ToasterTest">toasterTest</MatButton>
+
+
+<div class="nav-item px-3">
+    <NavLink class="nav-link" href="editconfig">
+        <span class="oi oi-plus" aria-hidden="true"></span> EditConfig
+    </NavLink>
+</div>
+<div class="nav-item px-3">
+    <NavLink class="nav-link" href="configlist">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> ConfigList
+    </NavLink>
+</div>
+
+
+@code {
+    private int _currentCount = 0;
+
+    private void IncrementCount()
+    {
+        _currentCount++;
+        
+    // add a notification with a toast message using MatBlazor Toaster.Add
+
+        Toaster.Add($"Current count: {_currentCount}", MatToastType.Success, "Counter");
+        
+        
+
+    }
+}
+
+
+@code {
+    private async Task DeleteAllUsers()
+    {
+
+        try
+        {
+            var users = UserManager.Users.ToList();
+
+
+            if (users.Count == 0)
+            {
+                Toaster.Add("Succeeded", MatToastType.Success, "Not users in database ");
+                return;
+            }
+            foreach (var user in users)
+            {
+                var result = await UserManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    Toaster.Add("Succeeded", MatToastType.Success, $"user {user.Email } deleted");
+                    
+                }
+                else
+                {
+                
+                    // Error handling
+                    Toaster.Add("Succeeded", MatToastType.Warning, "Command Error");
+                    
+
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+    // Error handling
+            Toaster.Add("Succeeded", MatToastType.Warning, "Command Error");
+            throw;
+        }
+      
+    }
+
+    private async Task InitDataBase()
+    {
+
+        try
+        {
+            var  result =  await  DatabaseInitializer.InitializeDatabaseAsync();
+
+            if (result)
+            {
+
+                Toaster.Add("Succeeded", MatToastType.Success, "Database Initialized");
+               
+            }
+            else
+            {
+                
+    // Error handling
+                Toaster.Add("Error", MatToastType.Warning, "Command Error");
+                
+
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+                 // Error handling
+            Toaster.Add("Error", MatToastType.Warning, "Command Error");
+           // throw;
+        }
+        
+          
+            
+        
+           
+    }
+
+
+
+    private void ToasterTest()
+    {
+
+        Toaster.Add("test", MatToastType.Success, "Success");
+
+      
+    }
+    
+}
