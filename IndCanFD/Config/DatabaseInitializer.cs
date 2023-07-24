@@ -1,7 +1,7 @@
 ﻿using System.Data.SQLite;
 using Dapper;
 using Microsoft.Data.Sqlite;
-public class DatabaseInitializer
+public class DatabaseInitializer :  IDatabaseInitializer
 {
     private readonly string _connectionString;
 

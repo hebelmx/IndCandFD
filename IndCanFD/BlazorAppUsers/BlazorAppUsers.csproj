@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConfigData\ConfigDataService.csproj" />
+    <ProjectReference Include="..\Config\Config.csproj" />
   </ItemGroup>
 
 </Project>

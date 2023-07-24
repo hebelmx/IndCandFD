@@ -14,6 +14,7 @@ using Serilog;
 using Serilog.Configuration;
 using Serilog.Events;
 using FluentAssertions.Common;
+using FramesDataService;
 
 
 Log.Logger = new LoggerConfiguration()
